@@ -68,7 +68,7 @@ for epoch in range(num_epochs):
 
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(train_loader):.4f}")
 
-# 评估模型
+
 model.eval()
 correct_count, total_count = 0, 0
 
@@ -76,20 +76,19 @@ with torch.no_grad():
     for batch_images, batch_labels in test_loader:
         batch_images, batch_labels = batch_images.to(device), batch_labels.to(device)
 
-        # 编码图像与文本
         img_features = model.encode_image(batch_images)
         img_features = img_features / img_features.norm(dim=-1, keepdim=True)  # 避免就地操作
 
         txt_features = model.encode_text(text_inputs)
         txt_features = txt_features / txt_features.norm(dim=-1, keepdim=True)  # 避免就地操作
 
-        # 计算相似度及预测
+        
         similarity_scores = (100.0 * img_features @ txt_features.T).softmax(dim=-1)
         predictions = similarity_scores.argmax(dim=1)
 
         correct_count += (predictions.cpu() == batch_labels.cpu()).sum().item()
         total_count += batch_labels.size(0)
 
-# 计算并输出准确率
+
 final_accuracy = (correct_count / total_count) * 100
 print(f"Fine-tuned accuracy on CIFAR-100: {final_accuracy:.2f}%")
