@@ -151,10 +151,10 @@ for epoch in range(num_epochs):
 
         #
         img_features = model.encode_image(batch_images)
-        img_features = img_features / img_features.norm(dim=-1, keepdim=True)  # 避免就地操作
+        img_features = img_features / img_features.norm(dim=-1, keepdim=True)  
 
         txt_features = model.encode_text(text_inputs)
-        txt_features = txt_features / txt_features.norm(dim=-1, keepdim=True)  # 避免就地操作
+        txt_features = txt_features / txt_features.norm(dim=-1, keepdim=True) 
 
         similarity_scores = (100.0 * img_features @ txt_features.T)
         loss = criterion(similarity_scores, batch_labels)
@@ -175,11 +175,11 @@ with torch.no_grad():
         batch_images, batch_labels = batch_images.to(device), batch_labels.to(device)
 
         img_features = model.encode_image(batch_images)
-        img_features = img_features / img_features.norm(dim=-1, keepdim=True)  # 避免就地操作
+        img_features = img_features / img_features.norm(dim=-1, keepdim=True) 
 
         
         txt_features = model.encode_text(text_inputs)
-        txt_features = txt_features / txt_features.norm(dim=-1, keepdim=True)  # 避免就地操作
+        txt_features = txt_features / txt_features.norm(dim=-1, keepdim=True) 
 
         similarity_scores = (100.0 * img_features @ txt_features.T)
         predictions = similarity_scores.argmax(dim=1)
