@@ -109,11 +109,10 @@ for param in model.token_embedding.parameters():
 num_params_to_tune = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Number of parameters to fine-tune: {num_params_to_tune}")
 
-# Set the number of samples per class
 num_samples_per_class = 1
 train_data = CIFAR100(root="./data", download=True, train=True, transform=preprocess_fn)
 
-# Sampling function
+# Sampling
 def random_few_shot_sampling(dataset, num_samples_per_class):
     label_indices = {label: [] for label in range(len(dataset.classes))}
     for idx in range(len(dataset)):
@@ -123,36 +122,28 @@ def random_few_shot_sampling(dataset, num_samples_per_class):
     for label in label_indices:
         few_shot_indices.extend(random.sample(label_indices[label], num_samples_per_class))
     return few_shot_indices
-
-# Get indices for few-shot data
 few_shot_indices = random_few_shot_sampling(train_data, num_samples_per_class)
 
-# Shuffle and split indices into training and validation sets
 random.shuffle(few_shot_indices)
 split_idx = int(len(few_shot_indices) * 0.8)  # 80% for training, 20% for validation
 train_indices = few_shot_indices[:split_idx]
 val_indices = few_shot_indices[split_idx:]
 
-# Create few-shot training and validation datasets
 few_shot_train_data = Subset(train_data, train_indices)
 few_shot_val_data = Subset(train_data, val_indices)
 
-# Create DataLoaders for training and validation sets
 train_loader = DataLoader(few_shot_train_data, batch_size=16, shuffle=True)
 val_loader = DataLoader(few_shot_val_data, batch_size=16, shuffle=False)
 
-# Load test data
 test_data = CIFAR100(root="./data", download=True, train=False, transform=preprocess_fn)
 test_loader = DataLoader(test_data, batch_size=16, shuffle=False)
 
-# Prepare text labels and tokenize
 text_labels = [template.format(label) for label in train_data.classes for template in all_templates]
 text_inputs = open_clip.tokenize(text_labels).to(device)
 selected_indices = range(0, 8000, 80)
 selected_indices = list(selected_indices)[:100]
 text_inputs = text_inputs[selected_indices]
 
-# Define loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.token_embedding.parameters(), lr=5e-5, weight_decay=0.01)
 num_epochs = 30
