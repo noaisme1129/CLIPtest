@@ -23,7 +23,7 @@ for param in model.token_embedding.parameters():
 num_repeats = 10
 shots = [1, 2, 4, 8, 16]
 all_accuracies = []
-num_epochs = 100
+num_epochs = 400
 batch_size = 128
 
 train_data = CIFAR100(root="./data", download=True, train=True, transform=preprocess_fn)
