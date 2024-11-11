@@ -114,7 +114,7 @@ all_templates = [
 ]
 text_labels = [template.format(label) for label in train_data.classes for template in all_templates]
 text_inputs = open_clip.tokenize(text_labels).to(device)
-selected_indices = list(range(0, len(text_labels), 80))[:100]  # 选择模板子集
+selected_indices = list(range(0, len(text_labels), 80))[:100]
 text_inputs = text_inputs[selected_indices]
 
 criterion = nn.CrossEntropyLoss()
